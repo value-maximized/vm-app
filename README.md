@@ -4,7 +4,11 @@ An app to help managers focus on making better decisions &amp; delivering projec
 
 
 
-🔭 I’m developing an open-source **SOP** _**Strategy & Operations Planner**_  - an app to help ELT (executive leadership teams) plan business better & faster.   
+🔭 I’m developing an open-source **SOP** _**Strategy & Operations Planner**_  - an app to help ELT (executive leadership teams) plan business better & faster. 
+
+<img width="852" height="873" alt="image" src="https://github.com/user-attachments/assets/47e57030-5768-4a18-bb48-050f1a0a380c" />
+
+<img width="1663" height="571" alt="image" src="https://github.com/user-attachments/assets/387bb764-475b-486d-8a03-4b8665407358" />
 
 ## Why SOP apps matter?
 
