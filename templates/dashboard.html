@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% set title = "Dashboard" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Dashboard <small class="text-muted">({{ scenario|capitalize }})</small></h2>
+  <span class="text-muted">As of {{ kpis.as_of }}</span>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h6 class="text-muted">FY Revenue (sum)</h6>
+        <h3 class="fw-bold">
+          ${{ '%.1f'|format(kpis.revenue_m|sum) }}M
+        </h3>
+        <canvas id="revChart" height="120" aria-label="Revenue"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h6 class="text-muted">Operating Margin (avg)</h6>
+        <h3 class="fw-bold">
+          {{ '%.1f'|format((kpis.op_margin_pct|sum) / (kpis.op_margin_pct|length)) }}%
+        </h3>
+        <canvas id="marginChart" height="120" aria-label="Operating Margin"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h6 class="text-muted">CSAT (latest)</h6>
+        <h3 class="fw-bold">{{ kpis.csat[-1] }}%</h3>
+        <canvas id="csatChart" height="120" aria-label="CSAT"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-md-6">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h6 class="text-muted">Capital Allocation</h6>
+        <canvas id="capChart" height="160" aria-label="Capital Allocation"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h6 class="text-muted">Headcount Allocation</h6>
+        <canvas id="hcChart" height="160" aria-label="Headcount Allocation"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <h6 class="text-muted mb-3">Strategic Initiatives</h6>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr><th>Initiative</th><th>Owner</th><th>Linked KPI</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for i in kpis.initiatives %}
+          {% set badge = {'On Track':'success','At Risk':'warning','Off Track':'danger'}[i.status] %}
+          <tr>
+            <td>{{ i.name }}</td>
+            <td>{{ i.owner }}</td>
+            <td>{{ i.kpi }}</td>
+            <td><span class="badge text-bg-{{ badge }}">{{ i.status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{# --- Embed all dynamic data once as JSON (no JS parsing of Jinja) --- #}
+<script id="kpi-data" type="application/json">
+  {{ {
+    "months": kpis.months,
+    "revenue_m": kpis.revenue_m,
+    "op_margin_pct": kpis.op_margin_pct,
+    "csat": kpis.csat,
+    "capital_alloc": kpis.capital_alloc,
+    "headcount_alloc": kpis.headcount_alloc
+  } | tojson }}
+</script>
+
+<script>
+(function () {
+  // Read server-provided data safely (prevents VS Code JS errors and redeclarations)
+  const kpiDataEl = document.getElementById('kpi-data');
+  if (!kpiDataEl) return;
+  const data = JSON.parse(kpiDataEl.textContent);
+
+  const months = data.months;
+  const revenue = data.revenue_m;
+  const margin = data.op_margin_pct;
+  const csat = data.csat;
+  const cap = data.capital_alloc;
+  const hc = data.headcount_alloc;
+
+  // Revenue
+  new Chart(document.getElementById('revChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Revenue ($M)',
+        data: revenue,
+        borderColor: '#0d6efd',
+        backgroundColor: 'rgba(13,110,253,.1)',
+        tension: .3,
+        fill: true
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { ticks: { callback: v => '$' + v + 'M' } } }
+    }
+  });
+
+  // Operating Margin
+  new Chart(document.getElementById('marginChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Op Margin %',
+        data: margin,
+        borderColor: '#198754',
+        backgroundColor: 'rgba(25,135,84,.1)',
+        tension: .3,
+        fill: true
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { ticks: { callback: v => v + '%' } } }
+    }
+  });
+
+  // CSAT
+  new Chart(document.getElementById('csatChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'CSAT %',
+        data: csat,
+        borderColor: '#fd7e14',
+        backgroundColor: 'rgba(253,126,20,.1)',
+        tension: .3,
+        fill: true
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { ticks: { callback: v => v + '%' } } }
+    }
+  });
+
+  // Capital Allocation
+  new Chart(document.getElementById('capChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(cap),
+      datasets: [{
+        data: Object.values(cap),
+        backgroundColor: ['#0d6efd','#6f42c1','#20c997','#ffc107','#dc3545']
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Headcount Allocation
+  new Chart(document.getElementById('hcChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(hc),
+      datasets: [{
+        data: Object.values(hc),
+        backgroundColor: ['#198754','#0dcaf0','#6610f2','#fd7e14','#6c757d']
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+})();
+</script>
+{% endblock %}
