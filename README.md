@@ -1,4 +1,4 @@
-# vm-app
+# VM-App, Strategy & Operations Planner - Business App
 An app to help managers focus on making better decisions &amp; delivering projects with higher ROI.
 
 
