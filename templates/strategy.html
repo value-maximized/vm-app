@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set title = "Strategy Overview" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Strategy Overview</h2>
+  <div>
+    <a class="btn btn-outline-primary" href="{{ url_for('dashboard', scenario='baseline') }}">Baseline</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('dashboard', scenario='aggressive') }}">Aggressive</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('dashboard', scenario='conservative') }}">Conservative</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Objectives & KPIs</h6>
+        <ul class="list-group list-group-flush">
+          {% for o in model.objectives %}
+            <li class="list-group-item">
+              <div class="fw-semibold">{{ o.objective }}</div>
+              <div class="small text-muted">
+                {% for k in o.kpis %}
+                  <span class="badge text-bg-light me-1">{{ k.name }}: {{ k.target }}</span>
+                {% endfor %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Initiatives (linked to KPIs)</h6>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead><tr><th>Initiative</th><th>Owner</th><th>KPI</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for i in model.initiatives %}
+              {% set badge = {'On Track':'success','At Risk':'warning','Off Track':'danger'}[i.status] %}
+              <tr>
+                <td>{{ i.name }}</td>
+                <td>{{ i.owner }}</td>
+                <td>{{ i.kpi }}</td>
+                <td><span class="badge text-bg-{{ badge }}">{{ i.status }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="small text-muted">Tip: Link initiatives to ERP facts (orders, invoices, costs) for automated scorecards.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
