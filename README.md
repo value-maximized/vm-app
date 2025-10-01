@@ -50,4 +50,4 @@ _**Features**_
 
 **As an open-source project, I invite any collaboration from the community to extend integrations, improve modeling, and shape the future of strategic planning.**
 
-<img width="2000" height="1545" alt="How-To graphic (3)" src="https://github.com/user-attachments/assets/d14e0781-3c31-47df-ac92-4fabdcb1fc2f" />
+<img width="2000" height="1545" alt="How-To graphic (2)" src="https://github.com/user-attachments/assets/d7359de2-1f08-41e8-b5f3-f9efb688a8d1" />
