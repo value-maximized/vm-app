@@ -18,12 +18,17 @@ _See the business lattice graphic below to understand where SOP sits alongwith y
 
 ## 🛠 Tech Stack
 - 🎨 **Frontend:** [Flask](https://flask.palletsprojects.com/)  
-- ⚙️ **Backend:** Python (Flask APIs & services)  
-- 🗄 **Database:**  
+- ⚙️ **Backend:** Python (and C) for Flask APIs & services
+
+🗄 **Database:**  
   - Postgres → for plans, scenarios, workflows  
-  - Cube.js + ClickHouse → for dashboards & analytics  
-- 🔌 **Integration:** Direct [Odoo](https://www.odoo.com/) ERP API connector (read/write where possible)  
-- ☁️ **Infrastructure:** Dockerized services, deployable on AWS  
+  - Cube.js + ClickHouse → for dashboards & analytics 
+
+🔌 **Integration:** 
+Direct [Odoo](https://www.odoo.com/) ERP API connector (read/write where possible) 
+
+☁️ **Infrastructure:** 
+Linux OS, Docker containers on AWS  
 
 
 ## ⚡Product Goals & Features
